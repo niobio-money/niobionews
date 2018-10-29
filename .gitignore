@@ -1,0 +1,6 @@
+/bin/
+/jdbcDemoDB/
+/.settings/
+.classpath
+.project
+derby.log
