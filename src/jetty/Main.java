@@ -6,13 +6,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class Main {
-	// tes
+import org.json.JSONObject;
+
+public abstract class Main {
+
 	private static final String driver = "org.apache.derby.jdbc.EmbeddedDriver";
 	private static final String dbName="jdbcDemoDB";
 	private static final String connectionURL = "jdbc:derby:" + dbName + ";create=true";
 	private static Connection conn;
 	private static Main main;
+	private JSONObject json;
 	
 	protected Main() {
 		String createString = "CREATE TABLE Log  "
@@ -34,20 +37,31 @@ public class Main {
 	}
 
 	void execute(String sql) throws SQLException {
-		getInstance();
 		Statement s = conn.createStatement();
 		s.execute(sql);		
 	}
 	
 	ResultSet executeQuery(String sql) throws SQLException {
-		getInstance();
 		Statement s = conn.createStatement();
 		return s.executeQuery(sql);		
 	}
 	
 	static Main getInstance() {
-		if (main == null) main = new Main();
+		if (main == null) main = new your.Main();
 		return main;
 	}
 	
+	void setJSON(JSONObject json) {
+		this.json = json;
+	} 
+	
+	protected JSONObject getJSON() {
+		return json;
+	} 
+	
+	void response(String s) {
+		json.put("text", s);
+	}
+	
+	public abstract void main(String[] args);
 }
