@@ -10,43 +10,24 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.ServletHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.json.JSONObject;
 
-public class MinimalServlets {
+public class Server {
 
 	private static Main main;
 
 	public static void main(String[] args) throws Exception {
-		// Create a basic jetty server object that will listen on port 8080.
-		// Note that if you set this to port 0 then a randomly available port
-		// will be assigned that you can either look in the logs for the port,
-		// or programmatically obtain it for use in test cases.
-		Server server = new Server(9090);
+		org.eclipse.jetty.server.Server server = new org.eclipse.jetty.server.Server(9090);
+        ServletContextHandler context = new ServletContextHandler(
+                ServletContextHandler.SESSIONS);
+        context.setContextPath("/");
+        context.setResourceBase(System.getProperty("java.io.tmpdir"));
+        server.setHandler(context);
+        context.addServlet(HelloServlet.class, "/");
 
-		// The ServletHandler is a dead simple way to create a context handler
-		// that is backed by an instance of a Servlet.
-		// This handler then needs to be registered with the Server object.
-		ServletHandler handler = new ServletHandler();
-		server.setHandler(handler);
-
-		// Passing in the class for the Servlet allows jetty to instantiate an
-		// instance of that Servlet and mount it on a given context path.
-
-		// IMPORTANT:
-		// This is a raw Servlet, not a Servlet that has been configured
-		// through a web.xml @WebServlet annotation, or anything similar.
-		handler.addServletWithMapping(HelloServlet.class, "/*");
-
-		// Start things up!
-		server.start();
-
-		// The use of server.join() the will make the current thread join and
-		// wait until the server is done executing.
-		// See
-		// http://docs.oracle.com/javase/7/docs/api/java/lang/Thread.html#join()
-		server.join();
+        server.start();
+        server.join();
 	}
 
 	@SuppressWarnings("serial")
@@ -57,38 +38,36 @@ public class MinimalServlets {
 			try {
 				if (request.getRequestURI().contains("favicon.ico"))
 					return;
-				System.out.println(request.getRequestURI());
-
-				// ----- is json? -----------
-				boolean isJson = true;
-				JSONObject json = null;
-				StringBuilder sb = new StringBuilder();
-				String s;
-				while ((s = request.getReader().readLine()) != null) {
-					sb.append(s);
-				}
-				try {
-					json = new JSONObject(sb.toString());
-				} catch (org.json.JSONException e) {
-					isJson = false;
-				}
-				// -------------------------
+				// System.out.println(request.getRequestURI());
 
 				main = Main.getInstance();
+				
+				PrintWriter out = response.getWriter();
+				response.setStatus(HttpServletResponse.SC_OK);
 
-				if (isJson) {
+				JSONObject json = null;
+				json = getJson(request);
+				
+				if (json != null) {
+					response.setContentType("application/json");
+					
 					main.execute("INSERT INTO Log (WHO, JSON) VALUES ('" + request.getSession().getId() + "', '"
 							+ json.toString() + "')");
 					main.setJSON(json);
-					main.main(json.getString("text").split(" "));
-					main.execute("INSERT INTO Log (WHO, JSON) VALUES ('" + request.getSession().getId() + "', '"
-							+ json.toString() + "')");
+					try{
+						json.remove("out");
+						main.main(json.getString("text").split(" "), request, response);
+					} catch (Exception e) {
+						json.put("error", e.getMessage());						
+					} finally {
+						main.execute("INSERT INTO Log (WHO, JSON) VALUES ('" + request.getSession().getId() + "', '"
+								+ json.toString() + "')");						
+					}
+					
+					out.println(json);
 
 				} else {
-					response.setContentType("text/html");
-					response.setStatus(HttpServletResponse.SC_OK);
-
-					PrintWriter out = response.getWriter();
+					response.setContentType("text/html");					
 
 					out.println("<!DOCTYPE html>");
 					out.println("<html>");
@@ -120,7 +99,7 @@ public class MinimalServlets {
 					out.println("contentType: \"application/json; charset=utf-8\",");
 					out.println("data : formData,");
 					out.println("success : function(result) {");
-					out.println("console.log(result);");
+					out.println("console.log(result);$('#out').val(JSON.stringify(result));");
 					out.println("},");
 					out.println("error: function(xhr, resp, text) {");
 					out.println("console.log(xhr, resp, text);");
@@ -130,13 +109,14 @@ public class MinimalServlets {
 					out.println("});");
 					out.println("</script>");
 
-					out.println("<h1>App Status</h1>");
+					out.println("<h1>Server and App Status</h1>");
 
-					out.println("<form id=\"form\" method=\"post\">");
-					out.println("<textarea id=\"json\" name=\"json\" rows=\"10\" cols=\"50\"></textarea><br/>");
-					out.println("<input type=\"hidden\" id=\"custId\" name=\"custId\" value=\"3487\">");
-					out.println("<input id=\"b1\" name=\"b1\" type=\"button\" value=\"Submit\">");
-					out.println("</form>");
+					out.println("<form id=\"form\" method=\"post\">");					
+					out.println("type your command: <input type=\"text\" id=\"text\" name=\"text\" value=\"\">");
+					//out.println("var1: <input type=\"text\" id=\"var1\" name=\"var1\" value=\"valor1\">");					
+					out.println("<input id=\"b1\" name=\"b1\" type=\"button\" value=\"Submit\"><br/><br/>");
+					out.println("out: <textarea id=\"out\" name=\"out\" rows=\"5\" cols=\"40\"></textarea><br/>");
+					out.println("</form><br/>");
 
 					main.execute("INSERT INTO Log (WHO, JSON) VALUES ('test', '----------------------------------')");
 					ResultSet rs = main.executeQuery("SELECT ID, WHO, WHEN, JSON FROM Log ORDER BY ID DESC");
@@ -158,6 +138,20 @@ public class MinimalServlets {
 				e.printStackTrace();
 			}
 
+		}
+
+		private JSONObject getJson(HttpServletRequest request) throws IOException {
+			JSONObject json = null;
+			StringBuilder sb = new StringBuilder();
+			String s;
+			while ((s = request.getReader().readLine()) != null) {
+				sb.append(s);
+			}
+			try {
+				json = new JSONObject(sb.toString());
+			} catch (org.json.JSONException e) {				
+			}
+			return json;
 		}
 
 		@Override

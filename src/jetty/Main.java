@@ -6,13 +6,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.json.JSONObject;
 
 public abstract class Main {
 
 	private static final String driver = "org.apache.derby.jdbc.EmbeddedDriver";
 	private static final String dbName="jdbcDemoDB";
-	private static final String connectionURL = "jdbc:derby:" + dbName + ";create=true";
+	//private static final String connectionURL = "jdbc:derby:" + dbName + ";create=true";
+	private static final String connectionURL = "jdbc:derby:memory:" + dbName + ";create=true";
 	private static Connection conn;
 	private static Main main;
 	private JSONObject json;
@@ -27,8 +31,8 @@ public abstract class Main {
 		try {
 			if (conn == null) conn = DriverManager.getConnection(connectionURL);
 			Statement s = conn.createStatement();
-			s.execute("DROP TABLE Log");
-			s = conn.createStatement();
+			//s.execute("DROP TABLE Log");
+			//s = conn.createStatement();
 			s.execute(createString);
 			
 		}  catch (Throwable e)  {   
@@ -59,8 +63,12 @@ public abstract class Main {
 		return json;
 	} 
 	
-	void response(String s) {
+	protected void print(String s) {
 		json.put("text", s);
+	}
+	
+	public void main(String[] args, HttpServletRequest request, HttpServletResponse response) {
+		main(args);
 	}
 	
 	public abstract void main(String[] args);
