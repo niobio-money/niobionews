@@ -20,7 +20,7 @@ public class Server {
 	private static Main main;
 
 	public static void main(String[] args) throws Exception {
-		System.setProperty( "derby.stream.error.field", "DerbyUtil.DEV_NULL" );
+		System.setProperty( "derby.stream.error.field", "jetty.DerbyUtil.DEV_NULL" );
 		org.eclipse.jetty.server.Server server = new org.eclipse.jetty.server.Server(YourMain.SERVER_PORT);
         ServletContextHandler context = new ServletContextHandler(
                 ServletContextHandler.SESSIONS);
@@ -109,17 +109,23 @@ public class Server {
 					out.println("});");
 					out.println("</script>");
 
-					out.println("<h1>Server and App Status</h1>");
+					out.println("<h1>Server and App Status</h1><br/>");
+					out.println("Para testar, digite /helloworld ou /datetime ou /seucomando, clique no submit, e veja o resultado na variavel text (campo response). <br/>");
+					out.println("No niobot, digite /createcmd seucomando http://seuservidor:porta para criar o comando /seucomando e vincular a chamada ao seu servidor.<br/>");
+					out.println("No niobot, digite /seucomando e veja se chamou aqui (F5 para atualizar a pagina).<br/>");
+					out.println("Se chamou, deve ter retornado \"Comando nao encontrado\" e, portanto, é hora de implementar de verdade o seu comando.<br/><br/>");
 
 					out.println("<form id=\"form\" method=\"post\">");					
 					out.println("type your command: <input type=\"text\" id=\"text\" name=\"text\" value=\"\">");										
 					out.println("<input id=\"btnSubmit\" name=\"btnSubmit\" type=\"button\" value=\"Submit\"><br/><br/>");
 					out.println("response: <textarea id=\"response\" name=\"response\" rows=\"5\" cols=\"40\"></textarea><br/>");
 					out.println("some field: <input type=\"text\" id=\"someFieldNameId\" name=\"someFieldNameId\" value=\"some value\"><br/>");
-					out.println("</form><br/>");
+					out.println("</form><br/><br/>");
 
 					main.execute("INSERT INTO Log (WHO, JSON) VALUES ('test', '----------------------------------')");
 					ResultSet rs = main.executeQuery("SELECT ID, WHO, WHEN, JSON FROM Log ORDER BY ID DESC");
+					
+					out.println("Ultimas 50 chamadas para debug.<br/><br/>");
 
 					out.println("<table>");
 					while (rs.next()) {

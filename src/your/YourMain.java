@@ -25,7 +25,7 @@ public class YourMain extends jetty.Main {
 				print(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()));
 				break;				
 			default:
-				print("Comando não encontrado");
+				print("Comando nao encontrado");
 				break;
 		}		
 	}
