@@ -8,13 +8,16 @@ import javax.servlet.http.HttpServletResponse;
 
 public class YourMain extends jetty.Main {
 	
-	public static int SERVER_PORT = 9090;
+	public static int SERVER_PORT = 80;
 	
 	// if you need request (session?) or response, use this main method, otherwise you can remove it
 	public void main(String[] args, HttpServletRequest request, HttpServletResponse response) {
 		main(args);
 	}
 	
+	// IMPORTANT: The real void main is in jetty.Server class. 
+	// So, to run go to (Eclipse) menu Debug -> Server class (not "on Server")
+	// When is ready: (Eclipse) menu File -> Export... -> Java Runnable Jar File -> Launch: Server. (Package req. libs)
 	public /*not static*/ void main(String[] args) {
 		
 		switch (args[0]) {
