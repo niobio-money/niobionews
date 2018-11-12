@@ -13,12 +13,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.json.JSONObject;
 
+import your.YourMain;
+
 public class Server {
 
 	private static Main main;
 
 	public static void main(String[] args) throws Exception {
-		org.eclipse.jetty.server.Server server = new org.eclipse.jetty.server.Server(9090);
+		System.setProperty( "derby.stream.error.field", "DerbyUtil.DEV_NULL" );
+		org.eclipse.jetty.server.Server server = new org.eclipse.jetty.server.Server(YourMain.SERVER_PORT);
         ServletContextHandler context = new ServletContextHandler(
                 ServletContextHandler.SESSIONS);
         context.setContextPath("/");
@@ -49,19 +52,16 @@ public class Server {
 				json = getJson(request);
 				
 				if (json != null) {
+					json.remove("response");
 					response.setContentType("application/json");
-					
-					main.execute("INSERT INTO Log (WHO, JSON) VALUES ('" + request.getSession().getId() + "', '"
-							+ json.toString() + "')");
+					main.insert(request.getSession().getId(), json.toString());
 					main.setJSON(json);
-					try{
-						json.remove("out");
+					try{						
 						main.main(json.getString("text").split(" "), request, response);
 					} catch (Exception e) {
 						json.put("error", e.getMessage());						
 					} finally {
-						main.execute("INSERT INTO Log (WHO, JSON) VALUES ('" + request.getSession().getId() + "', '"
-								+ json.toString() + "')");						
+						main.insert(request.getSession().getId(), json.toString());						
 					}
 					
 					out.println(json);
@@ -90,7 +90,7 @@ public class Server {
 					out.println("}");
 					out.println("return JSON.stringify( obj );");
 					out.println("}");
-					out.println("$(\"#b1\").on('click', function(){");
+					out.println("$(\"#btnSubmit\").on('click', function(){");
 					out.println("var formData = toJSONString(document.getElementById(\"form\"));");
 					out.println("$.ajax({");
 					out.println("url: '/',");
@@ -99,7 +99,7 @@ public class Server {
 					out.println("contentType: \"application/json; charset=utf-8\",");
 					out.println("data : formData,");
 					out.println("success : function(result) {");
-					out.println("console.log(result);$('#out').val(JSON.stringify(result));");
+					out.println("console.log(result);$('#response').val(JSON.stringify(result));");
 					out.println("},");
 					out.println("error: function(xhr, resp, text) {");
 					out.println("console.log(xhr, resp, text);");
@@ -112,10 +112,10 @@ public class Server {
 					out.println("<h1>Server and App Status</h1>");
 
 					out.println("<form id=\"form\" method=\"post\">");					
-					out.println("type your command: <input type=\"text\" id=\"text\" name=\"text\" value=\"\">");
-					//out.println("var1: <input type=\"text\" id=\"var1\" name=\"var1\" value=\"valor1\">");					
-					out.println("<input id=\"b1\" name=\"b1\" type=\"button\" value=\"Submit\"><br/><br/>");
-					out.println("out: <textarea id=\"out\" name=\"out\" rows=\"5\" cols=\"40\"></textarea><br/>");
+					out.println("type your command: <input type=\"text\" id=\"text\" name=\"text\" value=\"\">");										
+					out.println("<input id=\"btnSubmit\" name=\"btnSubmit\" type=\"button\" value=\"Submit\"><br/><br/>");
+					out.println("response: <textarea id=\"response\" name=\"response\" rows=\"5\" cols=\"40\"></textarea><br/>");
+					out.println("some field: <input type=\"text\" id=\"someFieldNameId\" name=\"someFieldNameId\" value=\"some value\"><br/>");
 					out.println("</form><br/>");
 
 					main.execute("INSERT INTO Log (WHO, JSON) VALUES ('test', '----------------------------------')");
@@ -134,6 +134,9 @@ public class Server {
 					out.println("</body>");
 					out.println("</html>");
 				}
+				
+				main.cleanLog();
+				
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
