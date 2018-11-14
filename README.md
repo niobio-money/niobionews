@@ -51,8 +51,10 @@ execute: jar cfm ..\prod\server.jar ..\META-INF\Manifest.txt * ..\lib
 
 5) git push
 
-6) in your server terminal. 
-git pull 
+6) in your server terminal.
+ 
+git pull
+ 
 java -jar prod/server.jar
 
 7) try again :-D
