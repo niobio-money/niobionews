@@ -17,7 +17,8 @@ public class YourMain extends jetty.Main {
 	
 	// IMPORTANT: The real void main is in jetty.Server class. 
 	// So, to run go to (Eclipse) menu Debug -> Server class (not "on Server")
-	// When is ready: (Eclipse) menu File -> Export... -> Java Runnable Jar File -> Launch: Server. (Package req. libs)
+	// When is ready: go to c:\workspace\MyServer\bin an execute comand below to create new server.jar 
+	// jar cfm ..\prod\server.jar ..\META-INF\Manifest.txt * ..\lib
 	public /*not static*/ void main(String[] args) {
 		
 		switch (args[0]) {
