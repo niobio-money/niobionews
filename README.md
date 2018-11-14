@@ -19,3 +19,18 @@ https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-vn
 
 7) Develop your command in src/your/YourMain.java, generate and run a new server.jar, and try send /yourcommand again
 
+--------- To develop: ---------------
+
+You need Java and Git. Should use Eclipse editor.
+
+Open your terminal and go to your workspace. (ex: c:\workspace)
+type: git clone https://github.com/soldate/MyServer
+In Eclipse, go to Import.. Git.. Exisitng.. find c:\workspace\MyServer
+Open src/your/YourMain and play a little.
+IMPORTANT: The real void main is in jetty.Server class. 
+So, to run go to (Eclipse) menu Debug -> Server class (not "on Server")
+When is ready: (Eclipse) menu File -> Export... -> Java Runnable Jar File -> Launch: Server. (Package req. libs). Save jar in /prod folder.
+You should probably use Show View -> Git Staging to see your changes
+
+
+ 
