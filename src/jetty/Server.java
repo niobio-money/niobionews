@@ -125,7 +125,7 @@ public class Server {
 					main.execute("INSERT INTO Log (WHO, JSON) VALUES ('test', '----------------------------------')");
 					ResultSet rs = main.executeQuery("SELECT ID, WHO, WHEN, JSON FROM Log ORDER BY ID DESC");
 					
-					out.println("Ultimas 50 chamadas para debug.<br/><br/>");
+					out.println("Ultimas 50 chamadas para debug. (Aperte F5)<br/><br/>");
 
 					out.println("<table>");
 					while (rs.next()) {
