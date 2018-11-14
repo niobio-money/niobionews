@@ -9,34 +9,50 @@ TIP: Pickup the minimal machine (low cost after free period. 5$), install 4gb of
 https://www.digitalocean.com/community/tutorials/how-to-add-swap-space-on-ubuntu-16-04
 https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-vnc-on-ubuntu-16-04
 
-3) Run this small java server (java -jar prod/server.jar) in youserver (try see in browser http://yourserver:port -  Default port is 80)
+3) Fork this repository https://github.com/soldate/MyServer
 
-4) Send a WhatsApp message to create a command: /createcmd yourcommand http://yourserver:port
+4) In your server terminal:
+type: git clone yourforkrepository (or https://github.com/soldate/MyServer)
 
-5) Send a WhatsApp message: /yourcommand
+5) Run this small java server (java -jar prod/server.jar). Try see in browser http://yourserver:port (Default port is 80)
 
-6) In an web browser, go to http://yourserver:port (press F5) and see if your server receive the message => text="Comando nao encontrado" (command not found)     
+6) Send a WhatsApp message to create a command: /createcmd yourcommand http://yourserver:port
 
-7) Develop your command in src/your/YourMain.java, generate and run a new server.jar, and try send /yourcommand again
+7) Send a WhatsApp message: /yourcommand
+
+8) In an web browser, go to http://yourserver:port (press F5) and see if your server receive the message => text="Comando nao encontrado" (command not found)     
+
+9) Develop (see below) your command in src/your/YourMain.java, generate and run a new server.jar, and try send /yourcommand again
 
 --------- To develop: ---------------
 
-You need Java and Git. Should use Eclipse editor. (read all first before start doing it):
+You need Java (JDK for run jar command, not only JRE) and Git. 
+Probably you should use Eclipse editor. (read all first before start doing it):
 
 1) Open your terminal and go to your workspace. (ex: c:\workspace)
 
-type: git clone https://github.com/soldate/MyServer
+type: git clone yourforkrepository (or https://github.com/soldate/MyServer)
 
 2) In Eclipse, go to Import.. Git.. Exisitng.. find c:\workspace\MyServer
 
 Open src/your/YourMain and play a little.
-
 IMPORTANT: The real void main is in jetty.Server class.
+You should probably use Show View -> Git Staging to see your changes
  
 3) So, to run go to (Eclipse) menu Debug -> Server class (not "on Server")
 
-4) When is ready: (Eclipse) menu File -> Export... -> Java Runnable Jar File -> Launch: Server. (Package req. libs). Save jar in /prod folder.
+4) When is ready, generate new server.jar 
+Open terminal and go to c:\workspace\MyServer\bin
+execute: jar cfm ..\prod\server.jar ..\META-INF\Manifest.txt * ..\lib
 
-You should probably use Show View -> Git Staging to see your changes
+5) git push
+
+6) in your server terminal. 
+git pull 
+java -jar prod/server.jar
+
+7) try again :-D
+
+
 
  
