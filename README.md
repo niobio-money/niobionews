@@ -5,9 +5,8 @@ The basic idea is (read all first before start doing it):
 1) Add WhatsApp bot +55 61 8220-9940 to your WhatsApp contacts
 
 2) Create your server (valid ip). If you dont have, you can create here https://m.do.co/c/1ac0e19b0bcd 
-TIP: Pickup the minimal machine (low cost after free period. 5$), install 4gb of swap memory and small visual interface
+TIP: Pickup the minimal machine (low cost after free period. 5$), install 4gb of swap memory
 https://www.digitalocean.com/community/tutorials/how-to-add-swap-space-on-ubuntu-16-04
-https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-vnc-on-ubuntu-16-04
 
 3) Fork this repository https://github.com/soldate/MyServer
 
