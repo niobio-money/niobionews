@@ -8,17 +8,18 @@ The basic idea is (read all first before start doing it):
 
 TIP: Pickup the minimal machine (low cost after free period. 5$), install 4gb of swap memory
 https://www.digitalocean.com/community/tutorials/how-to-add-swap-space-on-ubuntu-16-04
+prefer NYC for fast network ping 
 
 3) Fork this repository https://github.com/soldate/MyServer
 
 4) In your server terminal:
 type: git clone yourforkrepository (or https://github.com/soldate/MyServer)
 
-5) Run this small java server (java -jar prod/server.jar). Try see in browser http://yourserver:port (Default port is 80)
+5) Run this small java server (java -jar prod/server.jar). Try see in browser yourserverip:port (Default port is 80, dont use http or https, is always http)
 
-6) Send a WhatsApp message to create a command: /createcmd yourcommand http://yourserver:port
+6) Send a WhatsApp message to create a command: /createcmd yourcommand yourserverip:port (ex: /createcmd helloworld 45.53.141.200)
 
-7) Send a WhatsApp message: /yourcommand
+7) Send a WhatsApp message: /yourcommand (ex: /helloworld)
 
 8) In an web browser, go to http://yourserver:port (press F5) and see if your server receive the message => text="Comando nao encontrado" (command not found)     
 
