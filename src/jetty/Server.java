@@ -35,7 +35,8 @@ public class Server {
 		protected synchronized void doPost(HttpServletRequest request, HttpServletResponse response)
 				throws ServletException, IOException {
 			try {
-				if (request.getRequestURI().contains("favicon.ico")) return;
+				String requestUri = request.getRequestURI();
+				if (requestUri.contains("favicon.ico")) return;
 				// System.out.println(request.getRequestURI());
 
 				main = Main.getInstance();
@@ -63,8 +64,36 @@ public class Server {
 
 				} else {
 					response.setContentType("text/html");
-					String html = new String(Files.readAllBytes(Paths.get("./html/index.html")),
-							StandardCharsets.UTF_8);
+					main.execute("INSERT INTO Log (WHO, JSON) VALUES ('test', '----------------------------------')");					
+					
+					String html = "";
+					switch(requestUri) {						
+						case "/status":
+						case "/status.html":
+							html = loadHtml("./html/status.html");
+							String table = "";							
+							table += "<table>";
+							ResultSet rs = main.executeQuery("SELECT ID, WHO, WHEN, JSON FROM Log ORDER BY ID DESC");
+							while (rs.next()) {
+								table += "<tr>";
+								table += "<td>" + rs.getString("ID") + "</td>";
+								table += "<td>" + rs.getString("WHO") + "</td>";
+								table += "<td>" + rs.getString("WHEN") + "</td>";
+								table += "<td>" + rs.getString("JSON") + "</td>";
+								table += "</tr>";
+							}					
+							html = html.replace("<!--TB_RESULT-->", table);							
+							break;
+						case "/":
+						case "/index.html":
+							html = loadHtml("./html/index.html");
+							break;
+						case "/post":
+						case "/post.html":
+							html = loadHtml("./html/post.html");
+							break;							
+					}
+										
 					out.print(html);
 				}
 
@@ -93,6 +122,11 @@ public class Server {
 		@Override
 		protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 			doPost(req, resp);
+		}
+		
+		private String loadHtml(String filePath) throws IOException {
+			return new String(Files.readAllBytes(Paths.get(filePath)),
+					StandardCharsets.UTF_8);
 		}
 	}
 }

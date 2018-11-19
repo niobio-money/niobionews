@@ -19,10 +19,11 @@ public abstract class Main {
 	static final String DELETE = "DELETE FROM Log WHERE ID < (SELECT MAX(ID)-50 FROM Log)";
 
 	protected Main() {
-		String createString = "CREATE TABLE Log  " + "(ID INT NOT NULL GENERATED ALWAYS AS IDENTITY, "
-				+ " WHO VARCHAR(256), " + " WHEN TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+		String createString = null;
+		
+		createString = "CREATE TABLE Log (ID INT NOT NULL GENERATED ALWAYS AS IDENTITY, "
+				+ " WHO VARCHAR(256), WHEN TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
 				+ " JSON VARCHAR(2048) NOT NULL) ";
-
 		try {
 			if (conn == null) conn = DriverManager.getConnection(connectionURL);
 			Statement s = null;
@@ -33,6 +34,28 @@ public abstract class Main {
 			}
 			s = conn.createStatement();
 			s.execute(createString);
+			
+			createString = "CREATE TABLE News (" +
+					"ID INT NOT NULL GENERATED ALWAYS AS IDENTITY," +
+					"URL VARCHAR(512) NOT NULL," +
+					"TITULO VARCHAR(512) NOT NULL," +
+					"TEXTO VARCHAR(32672) NOT NULL," +
+					"CARTEIRA VARCHAR(95) NOT NULL," +
+					"PRECO INTEGER NOT NULL DEFAULT 0," +
+					"PAGO BOOLEAN NOT NULL DEFAULT false," +
+					"DATACRIACAO TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+					"DATAUPDATE TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+					"STATUS VARCHAR(256)," +
+					"CURTI INTEGER NOT NULL DEFAULT 0," +
+					"NAOCURTI INTEGER NOT NULL DEFAULT 0" +
+					")";
+			try {
+				s = conn.createStatement();
+				s.execute(createString);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
 
 		} catch (Throwable e) {
 			e.printStackTrace();

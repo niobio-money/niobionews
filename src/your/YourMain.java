@@ -32,6 +32,7 @@ public class YourMain extends jetty.Main {
 			case "/datetime":
 				print(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()));
 				break;
+			/*
 			default:
 				ResultSet rs = executeQuery("SELECT ID, WHO, WHEN, JSON FROM Log ORDER BY ID DESC");
 				List<JSONObject> l = new ArrayList<JSONObject>();
@@ -45,7 +46,7 @@ public class YourMain extends jetty.Main {
 					l.add(o);
 				}
 				print(o.toString());
-				break;
+				break;*/
 			}
 		} catch (Exception e) {
 			print(e.getMessage());
