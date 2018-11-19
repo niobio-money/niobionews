@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+	$(document).ready(function() {
+		function toJSONString(form) {
+			var obj = {};
+			var elements = form.querySelectorAll("input, select, textarea");
+			for (var i = 0; i < elements.length; ++i) {
+				var element = elements[i];
+				var name = element.name;
+				var value = element.value;
+				if (name) {
+					obj[name] = value;
+				}
+			}
+			return JSON.stringify(obj);
+		}
+		$("#btnSubmit").on('click', function() {
+			var formData = toJSONString(document.getElementById("form"));
+			$.ajax({
+				url : '/',
+				type : "POST",
+				dataType : 'json',
+				contentType : "application/json; charset=utf-8",
+				data : formData,
+				success : function(result) {
+					console.log(result);
+					$('#response').val(JSON.stringify(result));
+				},
+				error : function(xhr, resp, text) {
+					console.log(xhr, resp, text);
+				}
+			})
+		});
+	});
+</script>
+<h1>Server and App Status</h1>
+<br /> Para testar, digite /helloworld ou /datetime ou /seucomando,
+clique no submit, e veja o resultado na variavel text (campo response).
+<br /> No niobot, digite /createcmd seucomando http://seuservidor:porta
+para criar o comando /seucomando e vincular a chamada ao seu servidor.
+<br /> No niobot, digite /seucomando e veja se chamou aqui (F5 para
+atualizar a pagina).
+<br /> Se chamou, deve ter retornado "Comando nao encontrado" e,
+portanto, é hora de implementar de verdade o seu comando.
+<br />
+<br />
+<form id="form" method="post">
+	type your command: <input type="text" id="text" name="text" value="">
+	<input id="btnSubmit" name="btnSubmit" type="button" value="Submit"><br />
+	<br /> response:
+	<textarea id="response" name="response" rows="5" cols="40"></textarea>
+	<br /> some field: <input type="text" id="someFieldNameId"
+		name="someFieldNameId" value="some value"><br />
+</form>
+<br />
+<br /> Ultimas 50 chamadas para debug. (Aperte F5)
+<br />
+<br />
+<table id="tbResult" name="tbResult">
+	<tr>
+		<td>ID</td>
+		<td>Usuario</td>
+		<td>Data e hora</td>
+		<td>Mensagem</td>
+	</tr>
+</table>
+</body>
+</html>

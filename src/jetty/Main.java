@@ -1,24 +1,17 @@
 package jetty;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 
-import org.json.JSONObject;
+import org.json.*;
 
 public abstract class Main {
 
 	private static final String driver = "org.apache.derby.jdbc.EmbeddedDriver";
 	private static final String dbName = "jdbcDemoDB";
-	// private static final String connectionURL = "jdbc:derby:" + dbName +
-	// ";create=true";
-	private static final String connectionURL = "jdbc:derby:memory:" + dbName + ";create=true";
+	private static final String connectionURL = "jdbc:derby:" + dbName + ";create=true";
+	//private static final String connectionURL = "jdbc:derby:memory:" + dbName + ";create=true";
 	private static Connection conn;
 	private static Main main;
 	private JSONObject json;
@@ -31,11 +24,14 @@ public abstract class Main {
 				+ " JSON VARCHAR(2048) NOT NULL) ";
 
 		try {
-			if (conn == null)
-				conn = DriverManager.getConnection(connectionURL);
-			Statement s = conn.createStatement();
-			// s.execute("DROP TABLE Log");
-			// s = conn.createStatement();
+			if (conn == null) conn = DriverManager.getConnection(connectionURL);
+			Statement s = null;
+			try {
+				s = conn.createStatement();
+				s.execute("DROP TABLE Log");
+			} catch (SQLException e) {
+			}
+			s = conn.createStatement();
 			s.execute(createString);
 
 		} catch (Throwable e) {
@@ -43,19 +39,18 @@ public abstract class Main {
 		}
 	}
 
-	void execute(String sql) throws SQLException {
+	protected void execute(String sql) throws SQLException {
 		Statement s = conn.createStatement();
 		s.execute(sql);
 	}
 
-	ResultSet executeQuery(String sql) throws SQLException {
+	protected ResultSet executeQuery(String sql) throws SQLException {
 		Statement s = conn.createStatement();
 		return s.executeQuery(sql);
 	}
 
 	static Main getInstance() {
-		if (main == null)
-			main = new your.YourMain();
+		if (main == null) main = new your.YourMain();
 		return main;
 	}
 
@@ -85,9 +80,7 @@ public abstract class Main {
 
 			int affectedRows = statement.executeUpdate();
 
-			if (affectedRows == 0) {
-				throw new SQLException("Insert failed, no rows affected.");
-			}
+			if (affectedRows == 0) { throw new SQLException("Insert failed, no rows affected."); }
 
 			try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
 				if (generatedKeys.next()) {
