@@ -21,24 +21,41 @@ public abstract class Main {
 	protected Main() {
 		String createString = null;
 		
-		createString = "CREATE TABLE Log (ID INT NOT NULL GENERATED ALWAYS AS IDENTITY, "
-				+ " WHO VARCHAR(256), WHEN TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-				+ " JSON VARCHAR(2048) NOT NULL) ";
 		try {
 			if (conn == null) conn = DriverManager.getConnection(connectionURL);
 			Statement s = null;
+			
 			try {
 				s = conn.createStatement();
 				s.execute("DROP TABLE Log");
 			} catch (SQLException e) {
+				if (30000 != e.getErrorCode()) {
+					e.printStackTrace();
+					throw new RuntimeException();
+				}
 			}
+			
+			try {
+				s = conn.createStatement();
+				s.execute("DROP TABLE News");
+			} catch (SQLException e) {
+				if (30000 != e.getErrorCode()) {
+					e.printStackTrace();
+					throw new RuntimeException();
+				}
+			}
+
+			createString = "CREATE TABLE Log (ID INT NOT NULL GENERATED ALWAYS AS IDENTITY, "
+					+ " WHO VARCHAR(256), WHEN TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+					+ " JSON VARCHAR(2048) NOT NULL) ";
 			s = conn.createStatement();
 			s.execute(createString);
 			
 			createString = "CREATE TABLE News (" +
 					"ID INT NOT NULL GENERATED ALWAYS AS IDENTITY," +
-					"URL VARCHAR(512) NOT NULL," +
+					"URL VARCHAR(512) UNIQUE NOT NULL," +
 					"TITULO VARCHAR(512) NOT NULL," +
+					"LIDE VARCHAR(1024) NOT NULL," +
 					"TEXTO VARCHAR(32672) NOT NULL," +
 					"CARTEIRA VARCHAR(95) NOT NULL," +
 					"PRECO INTEGER NOT NULL DEFAULT 0," +
@@ -47,13 +64,22 @@ public abstract class Main {
 					"DATAUPDATE TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
 					"STATUS VARCHAR(256)," +
 					"CURTI INTEGER NOT NULL DEFAULT 0," +
-					"NAOCURTI INTEGER NOT NULL DEFAULT 0" +
+					"NAOCURTI INTEGER NOT NULL DEFAULT 0," +
+					"SCAM INTEGER NOT NULL DEFAULT 0" +
 					")";
 			try {
 				s = conn.createStatement();
 				s.execute(createString);
+				
+				for(int i=0;i<10;i++) {
+					s.execute("INSERT INTO News (URL, TITULO, LIDE, TEXTO, CARTEIRA, PRECO) VALUES ('dfhdfghd" + i + "','dfhdfghd','dfghdfgh','dfgsdgsdfgs','gsdfgsdgsdg',12)");
+				}
+				
 			} catch (SQLException e) {
-				e.printStackTrace();
+				if (30000 != e.getErrorCode()) {
+					e.printStackTrace();
+					throw new RuntimeException();
+				}
 			}
 
 
@@ -69,6 +95,7 @@ public abstract class Main {
 
 	protected ResultSet executeQuery(String sql) throws SQLException {
 		Statement s = conn.createStatement();
+		s.setMaxRows(100);
 		return s.executeQuery(sql);
 	}
 

@@ -4,6 +4,8 @@ import java.io.*;
 import java.nio.charset.*;
 import java.nio.file.*;
 import java.sql.*;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -25,8 +27,9 @@ public class Server {
 		context.setResourceBase(System.getProperty("java.io.tmpdir"));
 		server.setHandler(context);
 		context.addServlet(HelloServlet.class, "/");
+		main = Main.getInstance();
 		server.start();
-		server.join();
+		server.join();		
 	}
 
 	@SuppressWarnings("serial")
@@ -67,13 +70,14 @@ public class Server {
 					main.execute("INSERT INTO Log (WHO, JSON) VALUES ('test', '----------------------------------')");					
 					
 					String html = "";
+					ResultSet rs = null;
 					switch(requestUri) {						
 						case "/status":
 						case "/status.html":
 							html = loadHtml("./html/status.html");
 							String table = "";							
 							table += "<table>";
-							ResultSet rs = main.executeQuery("SELECT ID, WHO, WHEN, JSON FROM Log ORDER BY ID DESC");
+							rs = main.executeQuery("SELECT ID, WHO, WHEN, JSON FROM Log ORDER BY ID DESC");
 							while (rs.next()) {
 								table += "<tr>";
 								table += "<td>" + rs.getString("ID") + "</td>";
@@ -87,11 +91,42 @@ public class Server {
 						case "/":
 						case "/index.html":
 							html = loadHtml("./html/index.html");
+							String newsSpace = html.substring(html.indexOf("<!--NEWS-->"), html.indexOf("<!--/NEWS-->"));
+							rs = main.executeQuery("SELECT * FROM NEWS ORDER BY ID DESC");
+							String all = "";
+							String each = "";
+							while (rs.next()) {
+								each = newsSpace.replace("URL", rs.getString("URL"));
+								each = each.replace("TITULO", rs.getString("TITULO"));
+								each = each.replace("LIDE", rs.getString("LIDE"));
+								each = each.replace("PRECO", rs.getString("PRECO"));
+								each = each.replace("NAOCURTI", rs.getString("NAOCURTI"));
+								each = each.replace("CURTI", rs.getString("CURTI"));
+								each = each.replace("SCAM", rs.getString("SCAM"));
+								each = each.replace("DATACRIACAO", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(rs.getTimestamp("DATACRIACAO")));
+								all += each;
+							}
+							html = html.replace(newsSpace, all);							
 							break;
 						case "/post":
 						case "/post.html":
 							html = loadHtml("./html/post.html");
-							break;							
+							break;
+						default:
+							html = loadHtml("./html/post.html");
+							requestUri = requestUri.substring(1);
+							rs = main.executeQuery("SELECT * FROM News WHERE url = '" + requestUri + "'");
+							if (rs.next()) {
+								html = html.replace("TITULO", rs.getString("TITULO"));
+								html = html.replace("CARTEIRA", rs.getString("CARTEIRA"));
+								html = html.replace("LIDE", rs.getString("LIDE"));
+								html = html.replace("TEXTO", rs.getString("TEXTO"));
+								html = html.replace("PRECO", rs.getString("PRECO"));
+								html = html.replace("NAOCURTI", rs.getString("NAOCURTI"));
+								html = html.replace("CURTI", rs.getString("CURTI"));
+								html = html.replace("DATACRIACAO", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(rs.getTimestamp("DATACRIACAO")));								
+							}
+							break;
 					}
 										
 					out.print(html);

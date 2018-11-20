@@ -26,31 +26,25 @@ public class YourMain extends jetty.Main {
 	public /*not static*/ void main(String[] args) {
 		try {
 			switch (args[0]) {
-			case "/helloworld":
-				print("OLA MUNDO!");
+			case "/insert":
+				JSONObject j = getJSON();
+				String url = url(j.getString("titulo"));
+				j.put("url", url);		
+				String sql = "INSERT INTO News (URL, TITULO, LIDE, TEXTO, CARTEIRA, PRECO) VALUES ('" + url + "','" + j.getString("titulo") + "','" + j.getString("lide") +  "','" + j.getString("texto") +  "','" + j.getString("carteira") +  "'," + j.getString("preco") + ")";
+				execute(sql);
 				break;
-			case "/datetime":
-				print(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()));
-				break;
-			/*
 			default:
-				ResultSet rs = executeQuery("SELECT ID, WHO, WHEN, JSON FROM Log ORDER BY ID DESC");
-				List<JSONObject> l = new ArrayList<JSONObject>();
-				JSONObject o = null;
-				while (rs.next()) {
-					o = new JSONObject();
-					o.put("id", rs.getString("ID"));
-					o.put("who", rs.getString("WHO"));
-					o.put("when", rs.getString("WHEN"));
-					o.put("json", rs.getString("JSON"));
-					l.add(o);
-				}
-				print(o.toString());
-				break;*/
+				print("command not found");
+				break;
 			}
 		} catch (Exception e) {
 			print(e.getMessage());
 		}
+	}
+
+	private String url(String s) {
+		s = s.replaceAll("[^a-zA-Z0-9]", "_");
+		return s;
 	}
 
 }
