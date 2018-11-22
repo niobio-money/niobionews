@@ -87,7 +87,7 @@ public abstract class Main {
 			e.printStackTrace();
 		}
 	}
-
+	
 	protected void execute(String sql) throws SQLException {
 		Statement s = conn.createStatement();
 		s.execute(sql);
@@ -145,5 +145,9 @@ public abstract class Main {
 
 	protected void cleanLog() throws SQLException {
 		execute(DELETE);
+	}
+	
+	protected Connection getConnection() {
+		return conn;
 	}
 }

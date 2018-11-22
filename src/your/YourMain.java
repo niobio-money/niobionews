@@ -10,28 +10,29 @@ import org.json.*;
 
 public class YourMain extends jetty.Main {
 
-	public static int SERVER_PORT = 80;
+	public static int SERVER_PORT = 80;	
+	private static String INSERT = "INSERT INTO News (URL, TITULO, LIDE, TEXTO, CARTEIRA, PRECO) VALUES (?, ?, ?, ?, ?, ?)";
 
-	// if you need request (session?) or response, use this main method, otherwise you can remove it
 	@Override
-	public void main(String[] args, HttpServletRequest request, HttpServletResponse response) {
-		main(args);
-	}
-
-	// IMPORTANT: The real void main is in jetty.Server class. 
-	// So, to run go to (Eclipse) menu Debug -> Server class (not "on Server")
-	// When is ready: go to c:\workspace\MyServer\bin an execute comand below to create new server.jar 
-	// jar cfm ..\prod\server.jar ..\META-INF\Manifest.txt * ..\lib
-	@Override
-	public /*not static*/ void main(String[] args) {
-		try {
+	public void main(String[] args) {
+		JSONObject j = getJSON();
+		try {			
 			switch (args[0]) {
 			case "/insert":
-				JSONObject j = getJSON();
+				ifEmptyThrowException(j, new String[] {"titulo", "lide", "texto", "carteira", "preco"});
 				String url = url(j.getString("titulo"));
-				j.put("url", url);		
-				String sql = "INSERT INTO News (URL, TITULO, LIDE, TEXTO, CARTEIRA, PRECO) VALUES ('" + url + "','" + j.getString("titulo") + "','" + j.getString("lide") +  "','" + j.getString("texto") +  "','" + j.getString("carteira") +  "'," + j.getString("preco") + ")";
-				execute(sql);
+				j.put("url", url);
+				int preco = Integer.parseInt(j.getString("preco").trim());
+				if (preco > 100) preco = 100;
+				if (preco < 0) preco = 0;
+				PreparedStatement stmt = getConnection().prepareStatement(INSERT);
+			    stmt.setString(1, url);
+			    stmt.setString(2, j.getString("titulo"));
+			    stmt.setString(3, j.getString("lide"));
+			    stmt.setString(4, j.getString("texto"));
+			    stmt.setString(5, j.getString("carteira"));
+			    stmt.setInt(6, preco);
+			    stmt.executeUpdate();
 				break;
 			default:
 				print("command not found");
@@ -39,6 +40,13 @@ public class YourMain extends jetty.Main {
 			}
 		} catch (Exception e) {
 			print(e.getMessage());
+			j.put("error", e.getMessage());
+		}
+	}
+
+	private void ifEmptyThrowException(JSONObject j, String[] strings) throws Exception {
+		for(String x: strings) {
+			if (j.getString(x) == null || "".equals(j.getString(x).trim())) throw new Exception("o campo " + x + " não foi preenchido!");
 		}
 	}
 

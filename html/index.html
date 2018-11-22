@@ -99,6 +99,7 @@
 			}
 			return JSON.stringify(obj);
 		}
+		
 		$("#btnSubmit").on('click', function() {
 			var formData = toJSONString(document.getElementById("MyForm"));
 			$.ajax({
@@ -109,6 +110,11 @@
 				data : formData,
 				success : function(result) {
 					console.log(result);
+					if (result.error == null) {
+						$("#result").html("&nbsp;<a href='/" + result.url + "'> Criado! Clique aqui.</a>");
+					} else {
+						$("#result").html("&nbsp;" + result.error);
+					}					
 				},
 				error : function(xhr, resp, text) {
 					console.log(xhr, resp, text);
@@ -170,7 +176,7 @@
               <p class="card-text">LIDE</p>              
             </div>
             <div class="card-footer text-muted">
-              Preço: PRECO centavo(s) - Curti: CURTI - Não gostei: NAOCURTI - É golpe: SCAM - Postado em DATACRIACAO
+              Preço: NIOBIOSNBR NBRs = PRECO centavo(s) - Curti: CURTI - Não gostei: NAOCURTI - É golpe: SCAM - Postado em DATACRIACAO
             </div>
 			</a>
           </div>
@@ -209,12 +215,12 @@
 				<small id="carteiraHelp" class="form-text text-muted">Ex: NBvqvG5KWza2q8wSpKmdU8BZYxA51pjCcTESNUMnDRZJeLGxqFLbxq5KWLfkgEq8EDAAfdG8hsxbiXQWop9a12zLCAsEioF</small>
 			  </div> 			  
 			  <div class="form-group">
-				<label for="preco">Quantos centavos quer cobrar pela leitura?</label>
+				<label for="preco">Quantos centavos de real quer cobrar de cada leitor?</label>
 				<input type="text" class="form-control" id="preco" name="preco">
-				<small id="precoHelp" class="form-text text-muted">Digite um valor entre 0 e 100 centavos de reais (100 centavos = 1 real = valor máximo).</small>
+				<small id="precoHelp" class="form-text text-muted">Digite um valor entre 0 e 100 centavos de real (100 centavos = 1 real = valor máximo).</small>
 			  </div> 	
 			  
-			  <button id="btnSubmit" name="btnSubmit" type="button" class="btn btn-primary">Criar!</button>
+			  <button id="btnSubmit" name="btnSubmit" type="button" class="btn btn-primary">Criar!</button><spam id="result" name="result"></spam>
 			</form>
 		<br/><br/><br/><br/><br/><br/>
 		</div>	  

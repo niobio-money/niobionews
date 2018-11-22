@@ -4,6 +4,7 @@ import java.io.*;
 import java.nio.charset.*;
 import java.nio.file.*;
 import java.sql.*;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -13,10 +14,12 @@ import javax.servlet.http.*;
 import org.eclipse.jetty.servlet.*;
 import org.json.*;
 
+import util.Braziliex;
 import your.*;
 
 public class Server {
 
+	private static DecimalFormat df2 = new DecimalFormat(".##");
 	private static Main main;
 
 	public static void main(String[] args) throws Exception {
@@ -28,6 +31,7 @@ public class Server {
 		server.setHandler(context);
 		context.addServlet(HelloServlet.class, "/");
 		main = Main.getInstance();
+		Braziliex.main(args);
 		server.start();
 		server.join();		
 	}
@@ -71,6 +75,7 @@ public class Server {
 					
 					String html = "";
 					ResultSet rs = null;
+					String precoNBR = null;
 					switch(requestUri) {						
 						case "/status":
 						case "/status.html":
@@ -95,11 +100,14 @@ public class Server {
 							rs = main.executeQuery("SELECT * FROM NEWS ORDER BY ID DESC");
 							String all = "";
 							String each = "";
+							precoNBR = "";
 							while (rs.next()) {
+								precoNBR = "" + (int)Math.floor(rs.getDouble("PRECO")/(Braziliex.cotacao*100));								
 								each = newsSpace.replace("URL", rs.getString("URL"));
 								each = each.replace("TITULO", rs.getString("TITULO"));
 								each = each.replace("LIDE", rs.getString("LIDE"));
 								each = each.replace("PRECO", rs.getString("PRECO"));
+								each = each.replace("NIOBIOSNBR", precoNBR);
 								each = each.replace("NAOCURTI", rs.getString("NAOCURTI"));
 								each = each.replace("CURTI", rs.getString("CURTI"));
 								each = each.replace("SCAM", rs.getString("SCAM"));
@@ -116,14 +124,18 @@ public class Server {
 							html = loadHtml("./html/post.html");
 							requestUri = requestUri.substring(1);
 							rs = main.executeQuery("SELECT * FROM News WHERE url = '" + requestUri + "'");
+							precoNBR = "";
 							if (rs.next()) {
+								precoNBR = "" + (int)Math.floor(rs.getDouble("PRECO")/(Braziliex.cotacao*100));
 								html = html.replace("TITULO", rs.getString("TITULO"));
 								html = html.replace("CARTEIRA", rs.getString("CARTEIRA"));
 								html = html.replace("LIDE", rs.getString("LIDE"));
 								html = html.replace("TEXTO", rs.getString("TEXTO"));
 								html = html.replace("PRECO", rs.getString("PRECO"));
+								html = html.replace("NIOBIOSNBR", precoNBR);
 								html = html.replace("NAOCURTI", rs.getString("NAOCURTI"));
 								html = html.replace("CURTI", rs.getString("CURTI"));
+								html = html.replace("SCAM", rs.getString("SCAM"));
 								html = html.replace("DATACRIACAO", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(rs.getTimestamp("DATACRIACAO")));								
 							}
 							break;
