@@ -4,9 +4,7 @@ import java.io.*;
 import java.nio.charset.*;
 import java.nio.file.*;
 import java.sql.*;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.text.*;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -14,7 +12,7 @@ import javax.servlet.http.*;
 import org.eclipse.jetty.servlet.*;
 import org.json.*;
 
-import util.Braziliex;
+import util.*;
 import your.*;
 
 public class Server {
@@ -126,7 +124,7 @@ public class Server {
 							rs = main.executeQuery("SELECT * FROM News WHERE url = '" + requestUri + "'");
 							precoNBR = "";
 							if (rs.next()) {
-								precoNBR = "" + (int)Math.floor(rs.getDouble("PRECO")/(Braziliex.cotacao*100));
+								precoNBR = "" + U.centsToNBR(rs.getInt("PRECO"));
 								html = html.replace("TITULO", rs.getString("TITULO"));
 								html = html.replace("CARTEIRA", rs.getString("CARTEIRA"));
 								html = html.replace("LIDE", rs.getString("LIDE"));

@@ -82,6 +82,21 @@ public abstract class Main {
 				}
 			}
 
+			createString = "CREATE TABLE Compra (" +
+					"ID INT NOT NULL GENERATED ALWAYS AS IDENTITY," +
+					"NEWS INT NOT NULL," +
+					"SESSION VARCHAR(512) NOT NULL" +
+					")";
+			try {
+				s = conn.createStatement();
+				s.execute(createString);
+				
+			} catch (SQLException e) {
+				if (30000 != e.getErrorCode()) {
+					e.printStackTrace();
+					throw new RuntimeException();
+				}
+			}
 
 		} catch (Throwable e) {
 			e.printStackTrace();
