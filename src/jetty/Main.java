@@ -72,7 +72,7 @@ public abstract class Main {
 				s.execute(createString);
 				
 				for(int i=0;i<10;i++) {
-					s.execute("INSERT INTO News (URL, TITULO, LIDE, TEXTO, CARTEIRA, PRECO) VALUES ('url" + i + "','titulo" + i + "','lide','texto','carteira',10)");
+					s.execute("INSERT INTO News (URL, TITULO, LIDE, TEXTO, CARTEIRA, PRECO) VALUES ('url" + i + "','titulo" + i + "','lide','texto','carteira',1)");
 				}
 				
 			} catch (SQLException e) {
@@ -85,7 +85,8 @@ public abstract class Main {
 			createString = "CREATE TABLE Compra (" +
 					"ID BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY," +
 					"NEWS BIGINT NOT NULL," +
-					"SESSION VARCHAR(512) NOT NULL" +
+					"SESSION VARCHAR(512) NOT NULL," +
+					"VOTE VARCHAR(16)" +
 					")";
 			try {
 				s = conn.createStatement();
@@ -131,11 +132,9 @@ public abstract class Main {
 		json.put("text", s);
 	}
 
-	public void main(String[] args, HttpServletRequest request, HttpServletResponse response) {
-		main(args);
-	}
+	public abstract void main(String[] args, HttpServletRequest request, HttpServletResponse response);
 
-	public abstract void main(String[] args);
+	//public abstract void main(String[] args);
 
 	protected long insert(String userId, String json) throws SQLException {
 		long ret = -1;

@@ -100,7 +100,7 @@ public class Server {
 							String each = "";
 							precoNBR = "";
 							while (rs.next()) {
-								precoNBR = "" + (int)Math.floor(rs.getDouble("PRECO")/(Braziliex.cotacao*100));								
+								precoNBR = "" + U.centsToNBR(rs.getInt("PRECO"));								
 								each = newsSpace.replace("URL", rs.getString("URL"));
 								each = each.replace("TITULO", rs.getString("TITULO"));
 								each = each.replace("LIDE", rs.getString("LIDE"));
@@ -118,12 +118,12 @@ public class Server {
 						case "/post.html":
 							html = loadHtml("./html/post.html");
 							break;
-						default:
-							html = loadHtml("./html/post.html");
+						default:							
 							requestUri = requestUri.substring(1);
-							rs = main.executeQuery("SELECT * FROM News WHERE url = '" + requestUri + "'");
+							rs = main.executeQuery("SELECT n.* FROM News n, Compra c WHERE c.news = n.id AND n.url = '" + requestUri + "' AND c.session = '" + request.getSession().getId() + "'");
 							precoNBR = "";
 							if (rs.next()) {
+								html = loadHtml("./html/post.html");
 								precoNBR = "" + U.centsToNBR(rs.getInt("PRECO"));
 								html = html.replace("TITULO", rs.getString("TITULO"));
 								html = html.replace("CARTEIRA", rs.getString("CARTEIRA"));
@@ -135,6 +135,26 @@ public class Server {
 								html = html.replace("CURTI", rs.getString("CURTI"));
 								html = html.replace("SCAM", rs.getString("SCAM"));
 								html = html.replace("DATACRIACAO", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(rs.getTimestamp("DATACRIACAO")));								
+							} else {
+								rs = main.executeQuery("SELECT * FROM News WHERE url = '" + requestUri + "'");
+								if (rs.next()) {
+									html = loadHtml("./html/post.html"); //mustpay
+									precoNBR = "" + U.centsToNBR(rs.getInt("PRECO"));									
+									html = html.replace("URL", rs.getString("URL"));
+									html = html.replace("SESSION", request.getSession().getId());
+									html = html.replace("TITULO", rs.getString("TITULO"));
+									html = html.replace("CARTEIRA", rs.getString("CARTEIRA"));
+									html = html.replace("LIDE", rs.getString("LIDE"));
+									html = html.replace("TEXTO", rs.getString("TEXTO"));
+									html = html.replace("PRECO", rs.getString("PRECO"));
+									html = html.replace("NIOBIOSNBR", precoNBR);
+									html = html.replace("NAOCURTI", rs.getString("NAOCURTI"));
+									html = html.replace("CURTI", rs.getString("CURTI"));
+									html = html.replace("SCAM", rs.getString("SCAM"));
+									html = html.replace("DATACRIACAO", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(rs.getTimestamp("DATACRIACAO")));									
+								} else {
+									
+								}
 							}
 							break;
 					}

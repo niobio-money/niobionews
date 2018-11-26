@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
 Main-Class: jetty.Server
-Class-Path: ../lib/derby.jar ../lib/jetty-all-9.4.12.v20180830-uber.jar ../lib/json-20180813.jar 
+Class-Path: ../lib/ 
 Created-By: 0.1 (Niobio Cash NBR)

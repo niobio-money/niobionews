@@ -95,8 +95,7 @@
 			}
 			return JSON.stringify(obj);
 		}
-
-		function doIt() {
+		$("#btnSubmit").on('click', function() {
 			var formData = toJSONString(document.getElementById("MyForm"));
 			$.ajax({
 				url : '/',
@@ -111,12 +110,7 @@
 					console.log(xhr, resp, text);
 				}
 			})
-		}
-				
-		$("#btnCurti").on('click', function() {$("#text").val("/curti");doIt();});
-		$("#btnNaoCurti").on('click', function() {$("#text").val("/naocurti");doIt();});
-		$("#btnGolpe").on('click', function() {$("#text").val("/golpe");doIt();});
-		
+		});
 	});
 </script>	
   </head>
@@ -179,19 +173,12 @@
           <!-- Post Content -->
           <p class="lead">LIDE</p>
 
-          <p>TEXTO</p>
+          <p><b>Para ler o restante desse texto, você deve pagar PRECO centavo(s) ao autor.</b></p>
+          <p>Basta abrir o WhatsApp Web no Niobot (+55 61 8220-9940), copiar e colar a mensagem abaixo.</p>
+          <p><b>/oniobista URL SESSION</b></p>
+          <p>Feito isso, aperte F5 para recarregar essa página com o texto. Obrigado!</p>
 
           <hr>
-		  
-          <!-- Comments Form -->
-          <form id="MyForm" name="MyForm">
-          	<input type="hidden" id="text" name="text" value="" />
-          	<input type="hidden" id="url" name="url" value="URL" />
-		    <button id="btnCurti" name="btnCurti" class="btn btn-success">Curti</button>
-            <button id="btnNaoCurti" name="btnNaoCurti" class="btn btn-warning">Não gostei</button>
-            <button id="btnGolpe" name="btnGolpe" class="btn btn-danger">É golpe</button>
-          </form>
-		  <br/>
 
         </div>
 

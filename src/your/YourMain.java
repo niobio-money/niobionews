@@ -2,6 +2,9 @@ package your;
 
 import java.sql.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.json.*;
 
 public class YourMain extends jetty.Main {
@@ -10,10 +13,12 @@ public class YourMain extends jetty.Main {
 	private static String INSERT = "INSERT INTO News (URL, TITULO, LIDE, TEXTO, CARTEIRA, PRECO) VALUES (?, ?, ?, ?, ?, ?)";
 	private static String SELECT = "SELECT * FROM News WHERE URL = ?";
 	private static String INSERT_BUY = "INSERT INTO Compra (NEWS, SESSION) VALUES (?, ?)";
-	private static String UPDATE = "UPDATE News SET pago = true WHERE url = ?"; 
+	private static String UPDATE = "UPDATE News SET pago = true WHERE url = ?";
+	private static String SELECT_VOTE = "SELECT * FROM Compra WHERE SESSION = ? AND News = ?";
+	private static String INSERT_VOTE = "UPDATE Compra SET VOTE = ? WHERE SESSION = ? AND News = ?";		
 
 	@Override
-	public void main(String[] args) {
+	public void main(String[] args, HttpServletRequest request, HttpServletResponse response) {
 		JSONObject j = getJSON();
 		String url = null;
 		String session = null;
@@ -81,6 +86,22 @@ public class YourMain extends jetty.Main {
 				}
 				
 				break;
+			case "/curti":				
+				stmt = getConnection().prepareStatement(SELECT_VOTE);
+				stmt.setString(1, request.getSession().getId());
+				stmt.setString(2, j.getString("url"));
+				rs = stmt.executeQuery();
+				if (rs.next()) {
+					throw new Exception("o voto já foi computado");
+				} else {
+					
+				}
+				break;
+			case "/naocurti":
+				break;
+			case "/golpe":
+				break;
+				
 			default:
 				print("command not found");
 				break;
