@@ -88,8 +88,8 @@ public final class U {
 		return U.r.nextInt(Integer.SIZE - 1);
 	}
 
-	public static int centsToNBR(int cents) {
-		return (int)Math.floor(cents/(Braziliex.cotacao*100));
+	public static double centsToNBR(int cents) {
+		return cents/(Braziliex.cotacao*100);
 	}	
 
 }

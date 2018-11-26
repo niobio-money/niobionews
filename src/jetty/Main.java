@@ -45,14 +45,14 @@ public abstract class Main {
 				}
 			}
 
-			createString = "CREATE TABLE Log (ID INT NOT NULL GENERATED ALWAYS AS IDENTITY, "
+			createString = "CREATE TABLE Log (ID BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY, "
 					+ " WHO VARCHAR(256), WHEN TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
 					+ " JSON VARCHAR(2048) NOT NULL) ";
 			s = conn.createStatement();
 			s.execute(createString);
 			
 			createString = "CREATE TABLE News (" +
-					"ID INT NOT NULL GENERATED ALWAYS AS IDENTITY," +
+					"ID BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY," +
 					"URL VARCHAR(512) UNIQUE NOT NULL," +
 					"TITULO VARCHAR(512) NOT NULL," +
 					"LIDE VARCHAR(1024) NOT NULL," +
@@ -72,7 +72,7 @@ public abstract class Main {
 				s.execute(createString);
 				
 				for(int i=0;i<10;i++) {
-					s.execute("INSERT INTO News (URL, TITULO, LIDE, TEXTO, CARTEIRA, PRECO) VALUES ('dfhdfghd" + i + "','dfhdfghd','dfghdfgh','dfgsdgsdfgs','gsdfgsdgsdg',12)");
+					s.execute("INSERT INTO News (URL, TITULO, LIDE, TEXTO, CARTEIRA, PRECO) VALUES ('url" + i + "','titulo" + i + "','lide','texto','carteira',10)");
 				}
 				
 			} catch (SQLException e) {
@@ -83,8 +83,8 @@ public abstract class Main {
 			}
 
 			createString = "CREATE TABLE Compra (" +
-					"ID INT NOT NULL GENERATED ALWAYS AS IDENTITY," +
-					"NEWS INT NOT NULL," +
+					"ID BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY," +
+					"NEWS BIGINT NOT NULL," +
 					"SESSION VARCHAR(512) NOT NULL" +
 					")";
 			try {
