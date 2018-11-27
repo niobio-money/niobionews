@@ -72,7 +72,7 @@ public abstract class Main {
 				s.execute(createString);
 				
 				for(int i=0;i<10;i++) {
-					s.execute("INSERT INTO News (URL, TITULO, LIDE, TEXTO, CARTEIRA, PRECO) VALUES ('url" + i + "','titulo" + i + "','lide','texto','carteira',1)");
+					s.execute("INSERT INTO News (URL, TITULO, LIDE, TEXTO, CARTEIRA, PRECO) VALUES ('url" + i + "','titulo" + i + "','lide','texto','NBvqvG5KWza2q8wSpKmdU8BZYxA51pjCcTESNUMnDRZJeLGxqFLbxq5KWLfkgEq8EDAAfdG8hsxbiXQWop9a12zLCAsEioF',1)");
 				}
 				
 			} catch (SQLException e) {
@@ -81,6 +81,16 @@ public abstract class Main {
 					throw new RuntimeException();
 				}
 			}
+			
+			try {
+				s = conn.createStatement();
+				s.execute("DROP TABLE Compra");
+			} catch (SQLException e) {
+				if (30000 != e.getErrorCode()) {
+					e.printStackTrace();
+					throw new RuntimeException();
+				}
+			}			
 
 			createString = "CREATE TABLE Compra (" +
 					"ID BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY," +

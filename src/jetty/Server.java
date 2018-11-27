@@ -125,6 +125,7 @@ public class Server {
 							if (rs.next()) {
 								html = loadHtml("./html/post.html");
 								precoNBR = "" + U.centsToNBR(rs.getInt("PRECO"));
+								html = html.replace("ID_NEWS", rs.getString("ID"));
 								html = html.replace("TITULO", rs.getString("TITULO"));
 								html = html.replace("CARTEIRA", rs.getString("CARTEIRA"));
 								html = html.replace("LIDE", rs.getString("LIDE"));
@@ -138,8 +139,9 @@ public class Server {
 							} else {
 								rs = main.executeQuery("SELECT * FROM News WHERE url = '" + requestUri + "'");
 								if (rs.next()) {
-									html = loadHtml("./html/post.html"); //mustpay
-									precoNBR = "" + U.centsToNBR(rs.getInt("PRECO"));									
+									html = loadHtml("./html/mustpay.html"); //mustpay
+									precoNBR = "" + U.centsToNBR(rs.getInt("PRECO"));
+									html = html.replace("ID_NEWS", rs.getString("ID"));																		
 									html = html.replace("URL", rs.getString("URL"));
 									html = html.replace("SESSION", request.getSession().getId());
 									html = html.replace("TITULO", rs.getString("TITULO"));

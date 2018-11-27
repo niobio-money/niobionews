@@ -2,8 +2,7 @@ package your;
 
 import java.sql.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 
 import org.json.*;
 
@@ -13,9 +12,10 @@ public class YourMain extends jetty.Main {
 	private static String INSERT = "INSERT INTO News (URL, TITULO, LIDE, TEXTO, CARTEIRA, PRECO) VALUES (?, ?, ?, ?, ?, ?)";
 	private static String SELECT = "SELECT * FROM News WHERE URL = ?";
 	private static String INSERT_BUY = "INSERT INTO Compra (NEWS, SESSION) VALUES (?, ?)";
-	private static String UPDATE = "UPDATE News SET pago = true WHERE url = ?";
+	private static String UPDATE = "UPDATE News SET pago = true WHERE id = ?";
 	private static String SELECT_VOTE = "SELECT * FROM Compra WHERE SESSION = ? AND News = ?";
-	private static String INSERT_VOTE = "UPDATE Compra SET VOTE = ? WHERE SESSION = ? AND News = ?";		
+	private static String INSERT_VOTE = "UPDATE Compra SET VOTE = ? WHERE SESSION = ? AND News = ?";
+	private static String UPDATE_VOTE = "UPDATE News SET <X> = <X> + 1 WHERE id = ?";
 
 	@Override
 	public void main(String[] args, HttpServletRequest request, HttpServletResponse response) {
@@ -26,6 +26,7 @@ public class YourMain extends jetty.Main {
 		Integer precoCentavos = null;
 		Double precoNBR = null;
 		JSONObject jsonResponse = null; 
+		String columnName = null;
 		try {
 			switch (args[0]) {
 			case "/insert":
@@ -76,7 +77,7 @@ public class YourMain extends jetty.Main {
 							print("payId:" + paymentId + "\ntxHash:" + jsonResponse.getJSONObject("result").getString("transactionHash"));
 							if (rs.getBoolean("pago") != true) {
 								stmt = getConnection().prepareStatement(UPDATE);
-								stmt.setString(1, url);
+								stmt.setLong(1, rs.getLong("id"));
 								stmt.executeUpdate();
 							}
 						}
@@ -86,20 +87,29 @@ public class YourMain extends jetty.Main {
 				}
 				
 				break;
-			case "/curti":				
+
+			case "/curti":	
+				columnName = columnName==null?"CURTI":columnName;
+			case "/naocurti":
+				columnName = columnName==null?"NAOCURTI":columnName;
+			case "/golpe":
+				columnName = columnName==null?"SCAM":columnName;
 				stmt = getConnection().prepareStatement(SELECT_VOTE);
 				stmt.setString(1, request.getSession().getId());
-				stmt.setString(2, j.getString("url"));
+				stmt.setString(2, j.getString("news"));
 				rs = stmt.executeQuery();
-				if (rs.next()) {
+				if (rs.next() && rs.getString("VOTE") != null) {
 					throw new Exception("o voto já foi computado");
 				} else {
-					
+					stmt = getConnection().prepareStatement(INSERT_VOTE);
+					stmt.setString(1, args[0]);
+					stmt.setString(2, request.getSession().getId());
+					stmt.setString(3, j.getString("news"));			
+					stmt.executeUpdate();
+					stmt = getConnection().prepareStatement(UPDATE_VOTE.replaceAll("<X>", columnName));
+					stmt.setString(1, j.getString("news"));			
+					stmt.executeUpdate();					
 				}
-				break;
-			case "/naocurti":
-				break;
-			case "/golpe":
 				break;
 				
 			default:
